@@ -5,20 +5,9 @@ const profileSchema = new mongoose.Schema({
   emailAddress: {
     type: String,
     required: true,
-    unique: true 
+    unique: true,
   },
   photoUrl: String,
-  paymentMethods: [{ 
-    method: String, 
-    createdAt: {
-      type: Date,
-      default: Date.now 
-    },
-  }],
-  subscription: {
-    type: String, 
-    expiryDate: Date
-  }
 });
 
 const Profile = mongoose.model('Profile', profileSchema);
