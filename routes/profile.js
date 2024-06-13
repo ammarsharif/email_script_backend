@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/', async (req, res) => {
   try {
-    const { names, emailAddresses, photos } = req.body;
+    const { names, emailAddresses, photos, tokenStatus } = req.body;
     const name = names?.[0]?.displayName || '';
     const emailAddress = emailAddresses?.[0]?.value || '';
     const photoUrl = photos?.[0]?.url || '';
@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
     if (existingProfile) {
       return res.status(400).send('Email address already exists');
     }
-    const newProfile = new Profile({ name, emailAddress, photoUrl });
+    const newProfile = new Profile({ name, emailAddress, photoUrl, tokenStatus });
     console.log(newProfile,'NEW PROFILE DATA:::::');
     await newProfile.save();
     res.status(200).send('Profile saved');
