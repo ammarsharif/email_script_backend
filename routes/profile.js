@@ -12,7 +12,11 @@ router.post('/', async (req, res) => {
 
     const existingProfile = await Profile.findOne({ emailAddress });
     if (existingProfile) {
-      return res.status(400).send('Email address already exists');
+      if (existingProfile.tokenStatus) {
+        return res.status(200).json({ message: 'Profile already exists', authenticated: true });
+      } else {
+        return res.status(200).json({ message: 'Profile already exists', authenticated: false });
+      }
     }
     const newProfile = new Profile({ name, emailAddress, photoUrl, tokenStatus });
     console.log(newProfile,'NEW PROFILE DATA:::::');
