@@ -9,6 +9,7 @@ const profileSchema = new mongoose.Schema({
   },
   photoUrl: String,
   tokenStatus: Boolean,
+  apiCalls: Number,
 });
 
 const Profile = mongoose.model('Profile', profileSchema);
