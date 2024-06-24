@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 
 const profileRoutes = require('./routes/profile');
 const paymentRoutes = require('./routes/payment');
+const subscriptionRoutes = require('./routes/subscription');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,6 +18,7 @@ connectDB();
 
 app.use('/api/profile', profileRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/subscription', subscriptionRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).send('Server is running successfully');
