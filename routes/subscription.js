@@ -4,25 +4,19 @@ const Subscription = require('../models/Subscription');
 const router = express.Router();
 
 router.post('/', async (req, res) => {
-  const { userId, plan, planTitle, planPrice, features } = req.body;
-  if (!userId || !plan || !planTitle || !planPrice || !features) {
-    return res
-      .status(400)
-      .json({
-        error: 'User ID, plan, planTitle, planPrice, and features are required',
-      });
+  const { userId, plan } = req.body;
+  if (!userId || !plan) {
+    return res.status(400).json({ error: 'User ID and plan are required' });
   }
 
   try {
-    let subscription = await Subscription.findOne({ userId });
+    const subscription = await Subscription.findOne({ userId });
+
     if (!subscription) {
       return res.status(404).json({ error: 'Subscription not found' });
     }
 
     subscription.plan = plan;
-    subscription.planTitle = planTitle;
-    subscription.planPrice = planPrice;
-    subscription.features = features;
     subscription.startDate = new Date();
 
     if (plan === 'monthly') {
@@ -48,15 +42,15 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET route to fetch subscription by userId
 router.get('/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    const subscription = await Subscription.findOne({ userId });
-    if (!subscription) {
-      return res.status(404).json({ error: 'Subscription not found' });
+    const profile = await Subscription.findOne({ userId });
+    console.log(profile);
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found' });
     }
-    res.status(200).json({ subscription });
+    res.status(200).json({ subscriptionPlan: profile.plan });
   } catch (error) {
     console.error('Error fetching subscription:', error);
     res.status(500).json({ error: 'Internal Server Error' });
