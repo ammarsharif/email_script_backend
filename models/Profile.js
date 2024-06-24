@@ -8,7 +8,7 @@ const profileSchema = new mongoose.Schema({
     unique: true,
   },
   photoUrl: String,
-  tokenStatus: Boolean,
+  status: Boolean,
   apiCalls: Number,
 });
 

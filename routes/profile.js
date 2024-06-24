@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { token, tokenStatus, increment } = req.body;
+  const { token, status, increment } = req.body;
 
   if (!token) {
     return res.status(400).json({ error: 'Token is required' });
@@ -52,8 +52,8 @@ router.post('/', async (req, res) => {
         existingProfile.apiCalls += increment;
       }
 
-      if (tokenStatus !== undefined) {
-        existingProfile.tokenStatus = tokenStatus;
+      if (status !== undefined) {
+        existingProfile.status = status;
       }
 
       await existingProfile.save();
@@ -83,7 +83,7 @@ router.post('/', async (req, res) => {
         name,
         emailAddress,
         photoUrl,
-        tokenStatus: tokenStatus !== undefined ? tokenStatus : true,
+        status: status !== undefined ? status : true,
         apiCalls: increment || 0,
       });
 
@@ -118,7 +118,7 @@ router.delete('/', async (req, res) => {
 
     const updatedProfile = await Profile.findOneAndUpdate(
       { emailAddress },
-      { tokenStatus: false },
+      { status: false },
       { new: true }
     );
     console.log(updatedProfile, 'UPDATED PROFILE');
