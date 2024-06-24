@@ -12,18 +12,6 @@ const SubscriptionSchema = new mongoose.Schema({
     default: 'free',
     required: true,
   },
-  planTitle: {
-    type: String,
-    required: true,
-  },
-  planPrice: {
-    type: Number,
-    required: true,
-  },
-  features: {
-    type: [String],
-    required: true,
-  },
   startDate: {
     type: Date,
     default: Date.now,
