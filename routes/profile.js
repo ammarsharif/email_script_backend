@@ -4,7 +4,7 @@ const Profile = require('../models/Profile');
 const router = express.Router();
 
 router.post('/', async (req, res) => {
-  const { token, tokenStatus, increment, plan } = req.body;
+  const { token, tokenStatus, increment } = req.body;
 
   if (!token) {
     return res.status(400).json({ error: 'Token is required' });
@@ -43,31 +43,6 @@ router.post('/', async (req, res) => {
       }
 
       await existingProfile.save();
-      const existingSubscription = await Subscription.findOne({
-        userId: existingProfile._id,
-      });
-      if (existingSubscription) {
-        if (plan) {
-          existingSubscription.plan = plan;
-          existingSubscription.startDate = new Date();
-          existingSubscription.endDate = new Date(
-            existingSubscription.startDate.getTime() +
-              (plan === 'Monthly' ? 30 : 365) * 24 * 60 * 60 * 1000
-          );
-          await existingSubscription.save();
-        }
-      } else {
-        const newSubscription = new Subscription({
-          userId: existingProfile._id,
-          plan: plan || 'Free',
-          startDate: new Date(),
-          endDate: new Date(
-            new Date().getTime() +
-              (plan === 'Monthly' ? 30 : 365) * 24 * 60 * 60 * 1000
-          ),
-        });
-        await newSubscription.save();
-      }
 
       return res.status(200).json({
         message: increment
@@ -88,16 +63,8 @@ router.post('/', async (req, res) => {
 
       await newProfile.save();
 
-      const newSubscription = new Subscription({
-        userId: newProfile._id,
-        plan: 'Free',
-        startDate: new Date(),
-        endDate: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
-      });
-      await newSubscription.save();
-
       return res.status(200).json({
-        message: 'Profile and subscription saved successfully',
+        message: 'Profile saved successfully',
         authenticated: true,
         profileImage: photoUrl,
         apiCalls: newProfile.apiCalls,
