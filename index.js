@@ -5,7 +5,6 @@ require('dotenv').config();
 const connectDB = require('./config/db');
 
 const profileRoutes = require('./routes/profile');
-const paymentRoutes = require('./routes/payment');
 const subscriptionRoutes = require('./routes/subscription');
 
 const app = express();
@@ -17,7 +16,6 @@ app.use(bodyParser.json());
 connectDB();
 
 app.use('/api/profile', profileRoutes);
-app.use('/api/payment', paymentRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 
 app.get('/api/health', (req, res) => {
