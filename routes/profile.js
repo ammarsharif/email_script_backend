@@ -17,6 +17,45 @@ router.get('/', async (req, res) => {
   }
 });
 
+const plans = {
+  free: {
+    title: 'Free',
+    features: [
+      'Suggestions',
+      'Tone Adjustment',
+      'Communication Context',
+      'Limited Email Replies',
+      'Limited Suggestions',
+    ],
+    price: 0,
+    apiCounts: 100,
+  },
+  monthly: {
+    title: 'Monthly',
+    features: [
+      'Unlimited Emails',
+      'Personalized, human-like responses',
+      'Unlimited Suggestions',
+      'Tone Adjustment',
+      'Communication Context',
+    ],
+    price: 24.99,
+    apiCounts: 1000,
+  },
+  yearly: {
+    title: 'Yearly',
+    features: [
+      'Unlimited Emails',
+      'Personalized, human-like responses',
+      'Unlimited Suggestions',
+      'Tone Adjustment',
+      'Communication Context',
+    ],
+    price: 129,
+    apiCounts: 12000,
+  },
+};
+
 router.post('/', async (req, res) => {
   const { token, status, increment } = req.body;
 
@@ -62,11 +101,17 @@ router.post('/', async (req, res) => {
         userId: existingProfile._id,
       });
       if (!subscription) {
-        subscription = new Subscription({
+        const newSubscription = new Subscription({
           userId: existingProfile._id,
           plan: 'free',
+          planTitle: plans.free.title,
+          planFeatures: plans.free.features,
+          planPrice: plans.free.price,
+          planApiCounts: plans.free.apiCounts,
+          startDate: new Date(),
         });
-        await subscription.save();
+        await newSubscription.save();
+        subscription = newSubscription;
       }
 
       return res.status(200).json({
@@ -91,6 +136,11 @@ router.post('/', async (req, res) => {
       const newSubscription = new Subscription({
         userId: newProfile._id,
         plan: 'free',
+        planTitle: plans.free.title,
+        planFeatures: plans.free.features,
+        planPrice: plans.free.price,
+        planApiCounts: plans.free.apiCounts,
+        startDate: new Date(),
       });
       await newSubscription.save();
 
@@ -107,7 +157,6 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 router.delete('/', async (req, res) => {
   try {

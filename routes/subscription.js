@@ -3,6 +3,45 @@ const Subscription = require('../models/Subscription');
 
 const router = express.Router();
 
+const plans = {
+  free: {
+    title: 'Free',
+    features: [
+      'Suggestions',
+      'Tone Adjustment',
+      'Communication Context',
+      'Limited Email Replies',
+      'Limited Suggestions',
+    ],
+    price: 0,
+    apiCounts: 100,
+  },
+  monthly: {
+    title: 'Monthly',
+    features: [
+      'Unlimited Emails',
+      'Personalized, human-like responses',
+      'Unlimited Suggestions',
+      'Tone Adjustment',
+      'Communication Context',
+    ],
+    price: 24.99,
+    apiCounts: 1000,
+  },
+  yearly: {
+    title: 'Yearly',
+    features: [
+      'Unlimited Emails',
+      'Personalized, human-like responses',
+      'Unlimited Suggestions',
+      'Tone Adjustment',
+      'Communication Context',
+    ],
+    price: 129,
+    apiCounts: 12000,
+  },
+};
+
 router.post('/', async (req, res) => {
   const { userId, plan } = req.body;
   if (!userId || !plan) {
@@ -16,7 +55,17 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ error: 'Subscription not found' });
     }
 
+    const selectedPlan = plans[plan];
+    console.log(selectedPlan);
+    if (!selectedPlan) {
+      return res.status(400).json({ error: 'Invalid plan selected' });
+    }
+
     subscription.plan = plan;
+    subscription.planTitle = selectedPlan.title;
+    subscription.planFeatures = selectedPlan.features;
+    subscription.planPrice = selectedPlan.price;
+    subscription.planApiCounts = selectedPlan.apiCounts;
     subscription.startDate = new Date();
 
     if (plan === 'monthly') {
@@ -46,11 +95,10 @@ router.get('/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     const profile = await Subscription.findOne({ userId });
-    console.log(profile);
     if (!profile) {
-      return res.status(404).json({ error: 'Profile not found' });
+      return res.status(404).json({ error: 'Subscription not found' });
     }
-    res.status(200).json({ subscriptionPlan: profile.plan });
+    res.status(200).json({ subscriptionPlan: profile });
   } catch (error) {
     console.error('Error fetching subscription:', error);
     res.status(500).json({ error: 'Internal Server Error' });
