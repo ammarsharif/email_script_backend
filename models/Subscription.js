@@ -6,26 +6,15 @@ const SubscriptionSchema = new mongoose.Schema({
     ref: 'Profile',
     required: true,
   },
+  planId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'SubscriptionPlan',
+    required: true,
+  },
   plan: {
     type: String,
     enum: ['free', 'monthly', 'yearly'],
     default: 'free',
-    required: true,
-  },
-  planTitle: {
-    type: String,
-    required: true,
-  },
-  planFeatures: {
-    type: [String],
-    required: true,
-  },
-  planPrice: {
-    type: Number,
-    required: true,
-  },
-  planApiCounts: {
-    type: Number,
     required: true,
   },
   startDate: {

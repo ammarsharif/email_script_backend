@@ -1,6 +1,7 @@
 const express = require('express');
 const Profile = require('../models/Profile');
 const Subscription = require('../models/Subscription');
+const SubscriptionPlan = require('../models/SubscriptionPlan');
 
 const router = express.Router();
 
@@ -16,45 +17,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-const plans = {
-  free: {
-    title: 'Free',
-    features: [
-      'Suggestions',
-      'Tone Adjustment',
-      'Communication Context',
-      'Limited Email Replies',
-      'Limited Suggestions',
-    ],
-    price: 0,
-    apiCounts: 100,
-  },
-  monthly: {
-    title: 'Monthly',
-    features: [
-      'Unlimited Emails',
-      'Personalized, human-like responses',
-      'Unlimited Suggestions',
-      'Tone Adjustment',
-      'Communication Context',
-    ],
-    price: 24.99,
-    apiCounts: 1000,
-  },
-  yearly: {
-    title: 'Yearly',
-    features: [
-      'Unlimited Emails',
-      'Personalized, human-like responses',
-      'Unlimited Suggestions',
-      'Tone Adjustment',
-      'Communication Context',
-    ],
-    price: 129,
-    apiCounts: 12000,
-  },
-};
 
 router.post('/', async (req, res) => {
   const { token, status, increment } = req.body;
@@ -86,6 +48,9 @@ router.post('/', async (req, res) => {
 
     let existingProfile = await Profile.findOne({ emailAddress });
 
+    const subscriptionPlan = await SubscriptionPlan.findOne({
+      planTitle: 'free',
+    });
     if (existingProfile) {
       if (increment) {
         existingProfile.apiCalls += increment;
@@ -104,10 +69,7 @@ router.post('/', async (req, res) => {
         const newSubscription = new Subscription({
           userId: existingProfile._id,
           plan: 'free',
-          planTitle: plans.free.title,
-          planFeatures: plans.free.features,
-          planPrice: plans.free.price,
-          planApiCounts: plans.free.apiCounts,
+          planId: subscriptionPlan._id,
           startDate: new Date(),
         });
         await newSubscription.save();
@@ -136,10 +98,7 @@ router.post('/', async (req, res) => {
       const newSubscription = new Subscription({
         userId: newProfile._id,
         plan: 'free',
-        planTitle: plans.free.title,
-        planFeatures: plans.free.features,
-        planPrice: plans.free.price,
-        planApiCounts: plans.free.apiCounts,
+        planId: subscriptionPlan._id,
         startDate: new Date(),
       });
       await newSubscription.save();
