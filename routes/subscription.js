@@ -71,25 +71,23 @@ router.post('/updateApiCount', async (req, res) => {
     const subscriptionPlan = await SubscriptionPlan.findOne({
       _id: subscription.planId,
     });
-    if (subscription.apiCalls >= subscriptionPlan.planApiCounts) {
-      return res.status(403).json({ error: 'API LIMIT REACHED' });
-    }
-
-    if (!subscriptionPlan) {
-      return res.status(404).json({ error: 'Subscription plan not found' });
-    }
-
     if (!subscription) {
       return res.status(400).json({ error: 'Subscription not found' });
-    } else {
-      subscription.apiCalls += increment;
     }
 
+    if (
+      subscription.apiCalls >= subscriptionPlan.planApiCounts &&
+      subscription.plan === 'free'
+    ) {
+      return res.status(403).json({ error: 'API LIMIT REACHED', ok: false });
+    }
+    subscription.apiCalls += increment;
     await subscription.save();
 
     res.status(200).json({
       message: 'Subscription api count updated successfully',
       subscription,
+      ok: true,
     });
   } catch (error) {
     console.error('Error updating api count:', error);
