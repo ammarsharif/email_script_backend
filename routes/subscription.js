@@ -27,6 +27,7 @@ router.post('/', async (req, res) => {
         userId,
         plan: subscriptionPlan.planTitle,
         planId: subscriptionPlan._id,
+        apiCalls: 0,
         startDate: new Date(),
       });
     } else {
@@ -55,6 +56,43 @@ router.post('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Error assigning subscription plan:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.post('/updateApiCount', async (req, res) => {
+  const { userId, increment } = req.body;
+
+  if (!userId || !increment === undefined) {
+    return res.status(400).json({ error: 'increment is required' });
+  }
+  try {
+    let subscription = await Subscription.findOne({ userId });
+    const subscriptionPlan = await SubscriptionPlan.findOne({
+      _id: subscription.planId,
+    });
+    if (subscription.apiCalls >= subscriptionPlan.planApiCounts) {
+      return res.status(403).json({ error: 'API LIMIT REACHED' });
+    }
+
+    if (!subscriptionPlan) {
+      return res.status(404).json({ error: 'Subscription plan not found' });
+    }
+
+    if (!subscription) {
+      return res.status(400).json({ error: 'Subscription not found' });
+    } else {
+      subscription.apiCalls += increment;
+    }
+
+    await subscription.save();
+
+    res.status(200).json({
+      message: 'Subscription api count updated successfully',
+      subscription,
+    });
+  } catch (error) {
+    console.error('Error updating api count:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

@@ -17,6 +17,7 @@ const SubscriptionSchema = new mongoose.Schema({
     default: 'free',
     required: true,
   },
+  apiCalls: Number,
   startDate: {
     type: Date,
     default: Date.now,
