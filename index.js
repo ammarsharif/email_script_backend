@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv').config();
 const connectDB = require('./config/db');
+const cronJobs = require('./cronJobs');
 
 const profileRoutes = require('./routes/profile');
 const subscriptionRoutes = require('./routes/subscription');
@@ -27,3 +28,4 @@ app.get('/api/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+cronJobs;

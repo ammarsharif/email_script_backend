@@ -22,29 +22,26 @@ router.post('/', async (req, res) => {
 
     let subscription = await Subscription.findOne({ userId });
 
+    const startDate = new Date();
+    const endDate =
+      planTitle === 'yearly'
+        ? new Date(startDate.setFullYear(startDate.getFullYear() + 1))
+        : new Date(startDate.setMonth(startDate.getMonth() + 1));
+
     if (!subscription) {
       subscription = new Subscription({
         userId,
         plan: subscriptionPlan.planTitle,
         planId: subscriptionPlan._id,
         apiCalls: 0,
-        startDate: new Date(),
-        endDate: new Date().setMonth(new Date().getMonth() + 1),
+        startDate,
+        endDate,
       });
     } else {
       subscription.plan = subscriptionPlan.planTitle;
       subscription.planId = subscriptionPlan._id;
-      subscription.startDate = new Date();
-    }
-
-    if (planTitle === 'yearly') {
-      subscription.endDate = new Date(
-        new Date().setFullYear(new Date().getFullYear() + 1)
-      );
-    } else {
-      subscription.endDate = new Date(
-        new Date().setMonth(new Date().getMonth() + 1)
-      );
+      subscription.startDate = startDate;
+      subscription.endDate = endDate;
     }
 
     await subscription.save();
@@ -62,7 +59,7 @@ router.post('/', async (req, res) => {
 router.post('/updateApiCount', async (req, res) => {
   const { userId, increment } = req.body;
 
-  if (!userId || !increment === undefined) {
+  if (!userId || increment === undefined) {
     return res.status(400).json({ error: 'increment is required' });
   }
   try {
@@ -84,12 +81,12 @@ router.post('/updateApiCount', async (req, res) => {
     await subscription.save();
 
     res.status(200).json({
-      message: 'Subscription api count updated successfully',
+      message: 'Subscription API count updated successfully',
       subscription,
       ok: true,
     });
   } catch (error) {
-    console.error('Error updating api count:', error);
+    console.error('Error updating API count:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
