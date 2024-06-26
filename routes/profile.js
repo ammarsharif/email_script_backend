@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { token, status, increment } = req.body;
+  const { token, status } = req.body;
 
   if (!token) {
     return res.status(400).json({ error: 'Token is required' });
@@ -53,10 +53,6 @@ router.post('/', async (req, res) => {
       planTitle: 'free',
     });
     if (existingProfile) {
-      if (increment) {
-        existingProfile.apiCalls += increment;
-      }
-
       if (status !== undefined) {
         existingProfile.status = status;
       }
@@ -77,12 +73,10 @@ router.post('/', async (req, res) => {
         await subscription.save();
       }
       return res.status(200).json({
-        message: increment
-          ? 'Profile API calls incremented'
-          : 'Profile updated',
+        message: 'Profile status updated',
         authenticated: true,
         profileImage: photoUrl,
-        apiCalls: existingProfile.apiCalls,
+        userApiUsageCount: existingProfile.userApiUsageCount,
         subscription,
         id: existingProfile._id,
         emailAddress,
@@ -93,7 +87,7 @@ router.post('/', async (req, res) => {
         emailAddress,
         photoUrl,
         status: status !== undefined ? status : true,
-        apiCalls: increment || 0,
+        userApiUsageCount: 0,
       });
       await newProfile.save();
       const newSubscription = new Subscription({
@@ -117,6 +111,31 @@ router.post('/', async (req, res) => {
     }
   } catch (error) {
     console.error('Error handling profile:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.post('/updateApiCount', async (req, res) => {
+  const { userId, increment } = req.body;
+  if (!userId || !increment === undefined) {
+    return res.status(400).json({ error: 'increment is required' });
+  }
+  try {
+    let userProfile = await Profile.findOne({ _id: userId });
+
+    if (!userProfile) {
+      return res.status(400).json({ error: 'userProfile not found' });
+    }
+    userProfile.userApiUsageCount += increment;
+    await userProfile.save();
+
+    res.status(200).json({
+      message: 'userProfile api count updated successfully',
+      userProfile,
+      ok: true,
+    });
+  } catch (error) {
+    console.error('Error updating api count:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

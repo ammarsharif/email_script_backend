@@ -9,7 +9,7 @@ const profileSchema = new mongoose.Schema({
   },
   photoUrl: String,
   status: Boolean,
-  apiCalls: Number,
+  userApiUsageCount: Number,
 });
 
 const Profile = mongoose.model('Profile', profileSchema);
