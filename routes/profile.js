@@ -1,4 +1,5 @@
 const express = require('express');
+const fetch = require('node-fetch');
 const Profile = require('../models/Profile');
 const Subscription = require('../models/Subscription');
 const SubscriptionPlan = require('../models/SubscriptionPlan');
