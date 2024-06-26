@@ -69,6 +69,7 @@ router.post('/', async (req, res) => {
           planId: subscriptionPlan._id,
           apiCalls: 0,
           startDate: new Date(),
+          endDate: new Date().setMonth(new Date().getMonth() + 1),
         });
         await subscription.save();
       }
@@ -96,6 +97,7 @@ router.post('/', async (req, res) => {
         planId: subscriptionPlan._id,
         apiCalls: 0,
         startDate: new Date(),
+        endDate: new Date().setMonth(new Date().getMonth() + 1),
       });
       await newSubscription.save();
 

@@ -29,6 +29,7 @@ router.post('/', async (req, res) => {
         planId: subscriptionPlan._id,
         apiCalls: 0,
         startDate: new Date(),
+        endDate: new Date().setMonth(new Date().getMonth() + 1),
       });
     } else {
       subscription.plan = subscriptionPlan.planTitle;
@@ -36,16 +37,14 @@ router.post('/', async (req, res) => {
       subscription.startDate = new Date();
     }
 
-    if (planTitle === 'monthly') {
-      subscription.endDate = new Date(
-        new Date().setMonth(new Date().getMonth() + 1)
-      );
-    } else if (planTitle === 'yearly') {
+    if (planTitle === 'yearly') {
       subscription.endDate = new Date(
         new Date().setFullYear(new Date().getFullYear() + 1)
       );
     } else {
-      subscription.endDate = null;
+      subscription.endDate = new Date(
+        new Date().setMonth(new Date().getMonth() + 1)
+      );
     }
 
     await subscription.save();
