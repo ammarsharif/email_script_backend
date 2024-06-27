@@ -6,7 +6,6 @@ const router = express.Router();
 
 router.post('/', async (req, res) => {
   const { userId, planTitle } = req.body;
-  console.log(planTitle);
   if (!userId || !planTitle) {
     return res
       .status(400)
