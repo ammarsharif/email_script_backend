@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/', async (req, res) => {
   const { userId, planTitle } = req.body;
-
+  console.log(planTitle);
   if (!userId || !planTitle) {
     return res
       .status(400)
@@ -23,11 +23,18 @@ router.post('/', async (req, res) => {
     let subscription = await Subscription.findOne({ userId });
 
     const startDate = new Date();
-    const endDate =
-      planTitle === 'yearly'
-        ? new Date(startDate.setFullYear(startDate.getFullYear() + 1))
-        : new Date(startDate.setMonth(startDate.getMonth() + 1));
-
+    let endDate;
+    if (planTitle === 'yearly') {
+      const endDateYearly = new Date(startDate);
+      endDate = new Date(
+        endDateYearly.setFullYear(endDateYearly.getFullYear() + 1)
+      );
+    } else {
+      const endDateMonthly = new Date(startDate);
+      endDate = new Date(
+        endDateMonthly.setMonth(endDateMonthly.getMonth() + 1)
+      );
+    }
     if (!subscription) {
       subscription = new Subscription({
         userId,
